@@ -7,15 +7,13 @@ use function PHPUnit\Framework\isEmpty;
 class Usuarios extends CoreController
 {
     private $usuarioModel;
-    private $gdModel;
     protected $request;
-    protected $direito;
     use ResponseTrait;
 
     public function __construct()
     {
         parent::__construct();
-        $this->usuarioModel = new \App\Models\TeuserModel();
+        $this->usuarioModel = new \App\Models\UsuariosModel();
         $this->request = \Config\Services::request();
         helper('functions');
     }
@@ -51,24 +49,17 @@ class Usuarios extends CoreController
     {
         // debug("salvar");
         if (! $this->validate([
-            'Cd_USUARIO' => 'trim',
+            'Id' => 'trim',
             'Usuario' => ['rules' => 'required', 'errors' => ['required' => 'Campo Nome do Usuário é obrigatório.']],
-            'Cd_unidade_n' => ['rules' => 'required', 'errors' => ['required' => 'Campo Unidade de Negócio é obrigatório.']],
-            'Email' => ['rules' => 'required', 'errors' => ['required' => 'Campo Email é obrigatório.']],
-            'Cd_empresa' => ['rules' => 'required', 'errors' => ['required' => 'Campo Empresa é obrigatório.']],
+            'Admin' => ['rules' => 'required', 'errors' => ['required' => 'Campo Admin é obrigatório.']],
         ])) {
             return $this->formulario($_POST);
         } else {
-            $_POST['Cd_empresa'] = substr($_POST['Cd_empresa'],0,6);
-            $id = $_POST['Cd_USUARIO'];
-            unset($_POST['Cd_USUARIO']);
+            $id = $_POST['Id'];
+            unset($_POST['Id']);
             if($id == '') {
-                $_POST['Cd_USUARIO'] = $this->usuarioModel->proximo_usuario();
-                // debug($_POST);
                 $this->usuarioModel->inserir($_POST);
             } else {
-                // debug($id);
-                // debug($_POST);
                 $this->usuarioModel->editar($id, $_POST);
             }
             notificacao($id == '' ? 'Inserido com sucesso!' : 'Dados atualizados!');
@@ -100,19 +91,19 @@ class Usuarios extends CoreController
         $url = '/';
         if($usuario != null) {
             if (!isset($_POST['userpassword']) || $_POST['userpassword'] == '') {
-                return redirect()->to("alterar_senha/?usuario='".$_POST['username']."'");
+                // debug('teste');
+                return redirect()->to("alterar_senha/?Usuario='".$_POST['username']."'");
             }else{
-                $direitos = $this->gdModel->lista_direitos($usuario->Cd_gdirei);
                 $ses_data = [
-                    'Cd_usuario'    => $usuario->Cd_USUARIO,
+                    'Id'            => $usuario->Id,
                     'Usuario'       => $usuario->Nome,
-                    'Cd_gdirei'     => $usuario->Cd_gdirei,
-                    'direitos'      => $direitos,
+                    'Admin'         => $usuario->Admin,
                     'logged_in'     => TRUE
                 ];
                 $session->set($ses_data);
                 }
         } else {
+            debug('deu merda');
             $url = 'login';
         }
         return redirect()->to($url);
@@ -155,17 +146,12 @@ class Usuarios extends CoreController
         return view("examples/".$page, $data);
     }
 
-    public function proximo_usuario()
-    {
-        return $this->usuarioModel->proximo_usuario();
-    }
-
     public function alterar_senha()
     {
-        $post['usuario'] = $_GET['usuario'];
-        // debug($post);
+        $post['Usuario'] = $_GET['Usuario'];
         $post['titulo'] = 'Portal CIGAM | Alterar Senha';
         $post['senhaAtual'] = '';
+        // debug($post);
         return view('usuarios/alterarSenha', $post);
     }
 
@@ -173,8 +159,8 @@ class Usuarios extends CoreController
     {
         //conferir se o usuário tem senha em branco e se está logado,
         //caso o usuário já tenha senha e não esteja logado não pode alterar a senha
-        // debug($_POST);
-        $usuario = $this->usuarioModel->getUsuario($_POST['usuario']);
+        debug($_POST);
+        $usuario = $this->usuarioModel->getUsuario($_POST['Usuario']);
         if($usuario['Senha'] == '' && session()->get('logged_in') == null){
             // debug($usuario);
             $senhaLogar = $_POST['newpassword'];

@@ -20,6 +20,7 @@ class Createmateriais extends Migration
 			'Grupo' => [
 				'type' => 'varchar',
 				'constraint' => 40,
+				'null' => true,
 			],
 			'Unidade_de_medida' => [
 				'type' => 'varchar',

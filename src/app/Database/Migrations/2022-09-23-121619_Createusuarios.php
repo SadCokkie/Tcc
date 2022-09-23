@@ -20,9 +20,11 @@ class Createusuarios extends Migration
 			'Senha' => [
 				'type' => 'varchar',
 				'constraint' => 40,
+				'null' => true,
 			],
 			'Admin' => [
 				'type' => 'int',
+				'null' => true,
 			],
 		]);
         $this->forge->addKey('Id', true);

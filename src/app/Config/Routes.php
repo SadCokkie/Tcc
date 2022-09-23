@@ -42,46 +42,12 @@ $routes->get('/botoes', function(){
 //USUÁRIOS
 $routes->post('/login', 'Usuarios::login');
 $routes->post('/logar', 'Usuarios::logar');
+$routes->post('/alterar_senha/(:any)', 'Usuarios::alterar_senha/$1');
 $routes->post('/salvar_alteracao_senha', 'Usuarios::salvar_alteracao_senha');
 $routes->get('usuarios/(:any)'      , 'Usuarios::buscar/$1');
 $routes->post('usuarios/'           , 'Usuarios::criar');
 $routes->patch('usuarios/(:any)'    , 'Usuarios::editar/$1');
 $routes->delete('usuarios/(:any)'   , 'Usuarios::excluir/$1');
-
-//DIREITOS
-$routes->get('direitos/(:any)'      , 'Direitos::buscar/$1');
-$routes->post('direitos/'           , 'Direitos::criar');
-$routes->patch('direitos/(:any)'    , 'Direitos::editar/$1');
-$routes->delete('direitos/(:any)'   , 'Direitos::excluir/$1');
-
-//GRUPOS DE DIREITOS
-$routes->get('gruposdireitos/(:any)'      , 'GruposDireitos::buscar/$1');
-$routes->post('gruposdireitos/'           , 'GruposDireitos::criar');
-$routes->patch('gruposdireitos/(:any)'    , 'GruposDireitos::editar/$1');
-$routes->delete('gruposdireitos/(:any)'   , 'GruposDireitos::excluir/$1');
-
-//GRUPOS X DIREITOS
-$routes->get('gditens/(:any)'      , 'GruposXDireitos::index/$1');
-$routes->post('gditens/'           , 'GruposXDireitos::criar');
-$routes->delete('gditens/(:any)'   , 'GruposXDireitos::excluir/$1');
-
-//USUARIOS X GRUPOS
-$routes->get('gdusuarios/(:any)'      , 'UsuariosXGrupos::index/$1');
-$routes->post('gdusuarios/'           , 'UsuariosXGrupos::criar');
-$routes->delete('gdusuarios/(:any)'   , 'UsuariosXGrupos::excluir/$1');
-
-//EMPRESAS
-$routes->get('empresas/(:any)'      , 'Empresas::buscar/$1');
-$routes->post('empresas/'           , 'Empresas::criar');
-$routes->patch('empresas/(:any)'    , 'Empresas::editar/$1');
-$routes->delete('empresas/(:any)'   , 'Empresas::excluir/$1');
-
-//MENU
-$routes->get('menu/(:any)'      , 'Menu::buscar/$1');
-$routes->post('menu/'           , 'Menu::criar');
-$routes->patch('menu/(:any)'    , 'Menu::editar/$1');
-$routes->delete('menu/(:any)'   , 'Menu::excluir/$1');
-$routes->get('menu/formulario'  , 'Menu::formulario');
 
 
 /*
