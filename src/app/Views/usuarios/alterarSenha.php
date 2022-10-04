@@ -30,7 +30,7 @@
                                         <input name="userpassword" type="text" class="form-control" id="userpassword" placeholder="Digite senha atual">
                                     </div>
                                     <?php endif?>
-                                    <?= hidden('Usuario', isset($usuario) ? $usuario : '')?>
+                                    <?= hidden('Usuario', isset($Usuario) ? $Usuario : '')?>
                                     <div class="mb-3">
                                         <label class="form-label" for="newpassword">Senha</label>
                                         <input name="newpassword" type="password" class="form-control" id="newpassword" placeholder="Digite senha">

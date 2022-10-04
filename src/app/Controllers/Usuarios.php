@@ -103,7 +103,7 @@ class Usuarios extends CoreController
                 $session->set($ses_data);
                 }
         } else {
-            debug('deu merda');
+            // debug('deu merda');
             $url = 'login';
         }
         return redirect()->to($url);
@@ -159,21 +159,24 @@ class Usuarios extends CoreController
     {
         //conferir se o usuário tem senha em branco e se está logado,
         //caso o usuário já tenha senha e não esteja logado não pode alterar a senha
-        debug($_POST);
+        // debug($_POST);
         $usuario = $this->usuarioModel->getUsuario($_POST['Usuario']);
+        // debug($usuario);
         if($usuario['Senha'] == '' && session()->get('logged_in') == null){
-            // debug($usuario);
             $senhaLogar = $_POST['newpassword'];
             $senhaNova = md5('ABACATE'.strtoupper($_POST['newpassword']));
             $confirmaSenhaNova = md5('ABACATE'.strtoupper($_POST['confirmnewpassword']));
             if($senhaNova == $confirmaSenhaNova){
                 $usuario['Senha'] = $senhaNova;
-                $this->usuarioModel->editar($usuario['Id'], $usuario);
+                $id = $usuario['Id'];
+                unset($usuario['Id']);
+                // debug($usuario);
+                $this->usuarioModel->editar($id, $usuario);
+
                 unset($_POST);
                 $_POST['userpassword'] = $senhaLogar;
                 $_POST['username'] = $usuario['Usuario'];
                 return $this->logar();
-                debug('finalizou alteração');
             }
         }
     }

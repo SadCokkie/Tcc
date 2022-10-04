@@ -2,7 +2,6 @@
 namespace App\Models;
 class UsuariosModel extends CoreModel
 {
-    protected $table = 'Usuarios';
     protected $primaryKey = 'Id';
     protected $allowedFields = ['Id', 'Usuario','Senha','Admin'];
     protected $validationRules = [
@@ -10,11 +9,13 @@ class UsuariosModel extends CoreModel
     ];
 
     public function login($usuario,$senha){
+        // debug($senha);
         $query = $this->db->table("Usuarios U")
-            ->select("U.Id, RTRIM(U.Usuario) Nome")
-            ->where("U.Usuario = '".$usuario."'");
+            ->select("U.Id, RTRIM(U.Usuario) Nome, Admin")
+            ->where("UPPER(U.Usuario) = '".$usuario."'");
 
         if ($senha != '') {
+            // debug(isset($senha));
             $query->where("U.Senha",$senha);
         }
         return $query->get()->getRow();
@@ -60,7 +61,8 @@ class UsuariosModel extends CoreModel
 
     public function editar($id, $data)
     {
-        return $this->db->table('Usuarios')->where('Id',$id)->update($data);
+        // debug($data);
+        return $this->db->table('Usuarios')->where('Id',$id)->set($data)->update();
     }
 
     public function excluir($id)

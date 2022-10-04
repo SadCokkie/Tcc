@@ -32,10 +32,10 @@ class Database extends Config
 	 */
 	public $default = [
 		'DSN'      => '',
-		'hostname' => 'srvcigam',
+		'hostname' => 'localhost\SQLEXPRESS',
         'username' => 'sa',
         'password' => 'abyz.@1',
-        'database' => 'BDRAFAEL',
+        'database' => 'BDAGROSYS',
         'DBDriver' => 'sqlsrv',
 		'DBPrefix' => '',
 		'pConnect' => false,
