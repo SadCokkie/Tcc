@@ -22,13 +22,12 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <table id="usuarios" class="table responsive  table-hover table-striped compact display" style="position: static;" width="100%">
+                                    <table id="usuarios" class="table responsive table-hover table-striped compact display" style="position: static;" width="100%">
                                         <thead>
                                             <tr>
-                                                <th>USUÁRIO</th>
-                                                <th>NOME COMPLETO</th>
-                                                <th>EMAIL</th>
-                                                <th>UNIDADE DE NEGÓCIO</th>
+                                                <th>Id</th>
+                                                <th>Usuário</th>
+                                                <th>Admin</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
@@ -56,15 +55,17 @@
                     type: "post"
                 },
                 columns:[
+                    { data: "Id" },
                     { data: "Usuario" },
-                    { data: "Nome_completo" },
-                    { data: "Email" },
-                    { data: "Cd_unidade_n" },
+                    { data: "Admin" },
                     { data: null, "orderable": false, 'responsivePriority': 1, "className": "dt-nowrap" },
                 ],
+                columnDefs: [
+                    {className: "dt-center", targets: "_all"}
+                ],
                 createdRow: function (row, data, dataIndex) {
-                    $(row).attr('data-id', data.Cd_USUARIO);
-                    var botoes = '<a href="/Usuarios/formulario/'+ data.Cd_USUARIO +'" title="Editar" class="meutooltip"><i class= "mdi mdi-18px mdi-file-edit" ></i></a>';
+                    $(row).attr('data-id', data.Id);
+                    var botoes = '<a href="/Usuarios/formulario/'+ data.Id +'" title="Editar" class="meutooltip"><i class= "mdi mdi-18px mdi-file-edit" ></i></a>';
                     $('td', row).eq(row.childElementCount-1).html(botoes);
                 }
             });

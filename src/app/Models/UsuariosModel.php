@@ -35,8 +35,8 @@ class UsuariosModel extends CoreModel
 
         $query =$this->db->query("SELECT 
             U.Id,
-            U.Admin, 
-            RTRIM(U.Usuario) Usuario, 
+            RTRIM(U.Usuario) Usuario,
+            Case  WHEN U.Admin = 1 THEN 'Sim' ELSE 'Não' END AS Admin
         FROM Usuarios U
         $where
         ORDER BY $campo $direcao
@@ -45,7 +45,8 @@ class UsuariosModel extends CoreModel
 
         $response['data'] = $query->getResultArray();
         $response['lastQuery'] = $this->db->getLastQuery()->getQuery();
-        $countall = $this->db->query("SELECT COUNT(*) Resultados FROM Usuarios")->getRowArray();
+        // debug($response['data']);
+        $countall = $this->db->query("SELECT COUNT(*) Resultados FROM Usuarios $where")->getRowArray();
         // debug($countall->getRowArray());
         $response['recordsFiltered'] = $countall['Resultados'];
         $response['recordsTotal'] = $countall['Resultados'];

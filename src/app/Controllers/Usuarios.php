@@ -121,9 +121,6 @@ class Usuarios extends CoreController
         // debug("formulario");
         $data['titulo'] = $id == null ? 'Inserir' : 'Editar';
         $data['edit'] = false;
-        $data['sidebar'] = $this->sidebar;
-        $data['direitos'] = $this->direitos;
-        $data['unidades'] = $this->datalist('Cd_unidade_de_n','Nome_completo', 'GEUNIDNE');
         
         if ($id != null && ! is_array($id)) {
             $data['registro'] = $this->find($id,$this->usuarioModel);
@@ -148,11 +145,17 @@ class Usuarios extends CoreController
 
     public function alterar_senha()
     {
-        $post['Usuario'] = $_GET['Usuario'];
-        $post['titulo'] = 'Portal CIGAM | Alterar Senha';
-        $post['senhaAtual'] = '';
+        $post['usuario'] = $_GET['usuario'];
         // debug($post);
-        return view('usuarios/alterarSenha', $post);
+        $post['titulo'] = 'Portal CIGAM | Alterar Senha';
+        $usuario = $this->usuarioModel->getUsuario($post['usuario']);
+        $post['senhaAtual'] = $usuario['Senha'];
+        // debug($usuario);
+        if(($usuario['Senha'] == '' && session()->get('logged_in') == null) || ($usuario['Senha'] != '' && session()->get('logged_in') != null)){
+            return view('usuarios/alterarSenha', $post);
+        }else{
+            return $this->login();
+        }
     }
 
     public function salvar_alteracao_senha()
@@ -160,24 +163,20 @@ class Usuarios extends CoreController
         //conferir se o usuário tem senha em branco e se está logado,
         //caso o usuário já tenha senha e não esteja logado não pode alterar a senha
         // debug($_POST);
-        $usuario = $this->usuarioModel->getUsuario($_POST['Usuario']);
+        $usuario = $this->usuarioModel->getUsuario($_POST['usuario']);        
         // debug($usuario);
-        if($usuario['Senha'] == '' && session()->get('logged_in') == null){
-            $senhaLogar = $_POST['newpassword'];
-            $senhaNova = md5('ABACATE'.strtoupper($_POST['newpassword']));
-            $confirmaSenhaNova = md5('ABACATE'.strtoupper($_POST['confirmnewpassword']));
-            if($senhaNova == $confirmaSenhaNova){
-                $usuario['Senha'] = $senhaNova;
-                $id = $usuario['Id'];
-                unset($usuario['Id']);
-                // debug($usuario);
-                $this->usuarioModel->editar($id, $usuario);
-
-                unset($_POST);
-                $_POST['userpassword'] = $senhaLogar;
-                $_POST['username'] = $usuario['Usuario'];
-                return $this->logar();
-            }
+        $senhaLogar = $_POST['newpassword'];
+        $senhaNova = md5('CIGAM'.strtoupper($_POST['newpassword']));
+        $confirmaSenhaNova = md5('CIGAM'.strtoupper($_POST['confirmnewpassword']));
+        if($senhaNova == $confirmaSenhaNova){
+            $usuario['Senha'] = $senhaNova;
+            $this->usuarioModel->editar($usuario['Cd_USUARIO'], $usuario);
+            unset($_POST);
+            $_POST['userpassword'] = $senhaLogar;
+            $_POST['username'] = $usuario['Usuario'];
+            return $this->logar();
         }
+        
     }
+
 }
