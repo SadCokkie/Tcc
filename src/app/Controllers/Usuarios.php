@@ -47,12 +47,13 @@ class Usuarios extends CoreController
 
     public function salvar()
     {
-        // debug("salvar");
-        if (! $this->validate([
+        $_POST['Admin'] = isset($_POST['Admin']) ? 1 : 0;
+        // debug($_POST);
+        if (!$this->validate([
             'Id' => 'trim',
             'Usuario' => ['rules' => 'required', 'errors' => ['required' => 'Campo Nome do Usuário é obrigatório.']],
-            'Admin' => ['rules' => 'required', 'errors' => ['required' => 'Campo Admin é obrigatório.']],
-        ])) {
+            ])) {
+            // debug('teste');
             return $this->formulario($_POST);
         } else {
             $id = $_POST['Id'];
@@ -119,6 +120,10 @@ class Usuarios extends CoreController
     public function formulario ($id = null)
     {
         // debug("formulario");
+        if ($id == null) {
+            $id = isset($_POST['Id']) ? $_POST['Id'] : null; 
+        }
+        // debug($id);
         $data['titulo'] = $id == null ? 'Inserir' : 'Editar';
         $data['edit'] = false;
         
@@ -133,15 +138,6 @@ class Usuarios extends CoreController
         }
         return view('usuarios/formulario',$data);
     }    
-
-    public function testeview()
-    {
-        $data['title_meta'] = 'teste';
-        $data['page_title'] = 'teste';
-        $data['sidebar'] = $this->sidebar;
-        $page = "icons-materialdesign";
-        return view("examples/".$page, $data);
-    }
 
     public function alterar_senha()
     {

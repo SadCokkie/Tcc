@@ -12,20 +12,15 @@
                                     <!-- ============================================================== -->
                                     <!-- Start Content here -->
                                     <!-- ============================================================== -->
-                                    <form id="formulario_usuarios" style="position: static;" width="100%" action="/Usuarios/salvar" method="post">
+                                    <form id="formulario_cas" style="position: static;" width="100%" action="/Cas/salvar" method="post">
                                         <div class="row">
                                             <?= hidden('Id', isset($registro) ? $registro['Id'] : '');?>
-                                            <?= input('Nome do Usuário','Usuario',4,isset($registro) ? rtrim($registro['Usuario']) : '','text'); ?>
-                                        </div>
-                                        <br>
-                                        <div>
-                                            <input type="checkbox" id="Admin" name="Admin" <?= isset($registro['Admin']) ? ($registro['Admin'] == 1 ? 'checked' : 'unchecked') : 'checked';?>>
-                                            <label for="Admin">Admin</label>
+                                            <?= input('Descrição','Descricao',4,isset($registro) ? rtrim($registro['Descricao']) : '','text'); ?>
                                         </div>
                                         <div class="right" style="margin-top: 5px;">
-                                            <a href="/Usuarios" class="btn btn-secondary"><i class="fas fa-reply"></i></a>
+                                            <a href="/Cas" class="btn btn-secondary"><i class="fas fa-reply"></i></a>
                                             <button class="btn btn-primary" type="submit"><i class="fas fa-check"></i></button>
-                                            <?= $edit == true ? '<a href="/Usuarios/excluir/'.$registro['Id'].'" class="btn btn-dark"><i class="fas fa-trash"></i></a>' : '' ?>
+                                            <?= $edit == true ? '<a href="/Cas/excluir/'.$registro['Id'].'" class="btn btn-dark"><i class="fas fa-trash"></i></a>' : '' ?>
                                         </div>
                                     </form>
                                     <!-- ============================================================== -->

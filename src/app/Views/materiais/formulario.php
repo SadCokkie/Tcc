@@ -12,20 +12,17 @@
                                     <!-- ============================================================== -->
                                     <!-- Start Content here -->
                                     <!-- ============================================================== -->
-                                    <form id="formulario_usuarios" style="position: static;" width="100%" action="/Usuarios/salvar" method="post">
+                                    <form id="formulario_materiais" style="position: static;" width="100%" action="/Materiais/salvar" method="post">
                                         <div class="row">
                                             <?= hidden('Id', isset($registro) ? $registro['Id'] : '');?>
-                                            <?= input('Nome do Usuário','Usuario',4,isset($registro) ? rtrim($registro['Usuario']) : '','text'); ?>
-                                        </div>
-                                        <br>
-                                        <div>
-                                            <input type="checkbox" id="Admin" name="Admin" <?= isset($registro['Admin']) ? ($registro['Admin'] == 1 ? 'checked' : 'unchecked') : 'checked';?>>
-                                            <label for="Admin">Admin</label>
+                                            <?= input('Descrição','Descricao',4,isset($registro) ? rtrim($registro['Descricao']) : '','text'); ?>
+                                            <?= input('Grupo','Grupo',4,isset($registro) ? rtrim($registro['Grupo']) : '','text'); ?>
+                                            <?= input('Unidade de Medida','Unidade_de_medida',4,isset($registro) ? rtrim($registro['Unidade_de_medida']) : '','text'); ?>
                                         </div>
                                         <div class="right" style="margin-top: 5px;">
-                                            <a href="/Usuarios" class="btn btn-secondary"><i class="fas fa-reply"></i></a>
+                                            <a href="/Materiais" class="btn btn-secondary"><i class="fas fa-reply"></i></a>
                                             <button class="btn btn-primary" type="submit"><i class="fas fa-check"></i></button>
-                                            <?= $edit == true ? '<a href="/Usuarios/excluir/'.$registro['Id'].'" class="btn btn-dark"><i class="fas fa-trash"></i></a>' : '' ?>
+                                            <?= $edit == true ? '<a href="/Materiais/excluir/'.$registro['Id'].'" class="btn btn-dark"><i class="fas fa-trash"></i></a>' : '' ?>
                                         </div>
                                     </form>
                                     <!-- ============================================================== -->

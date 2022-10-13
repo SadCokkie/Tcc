@@ -2,6 +2,7 @@
 namespace App\Models;
 class UsuariosModel extends CoreModel
 {
+    protected $table = 'Usuarios';
     protected $primaryKey = 'Id';
     protected $allowedFields = ['Id', 'Usuario','Senha','Admin'];
     protected $validationRules = [
@@ -46,7 +47,7 @@ class UsuariosModel extends CoreModel
         $response['data'] = $query->getResultArray();
         $response['lastQuery'] = $this->db->getLastQuery()->getQuery();
         // debug($response['data']);
-        $countall = $this->db->query("SELECT COUNT(*) Resultados FROM Usuarios $where")->getRowArray();
+        $countall = $this->db->query("SELECT COUNT(*) Resultados FROM Usuarios U $where")->getRowArray();
         // debug($countall->getRowArray());
         $response['recordsFiltered'] = $countall['Resultados'];
         $response['recordsTotal'] = $countall['Resultados'];
