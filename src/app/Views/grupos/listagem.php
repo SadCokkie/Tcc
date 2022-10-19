@@ -17,17 +17,16 @@
                                         </div>
                                         <div class="col-6">
                                             <div class="btn btn-group-sm width-xs right">
-                                                <a style="margin-left: 5px;" class="btn btn-primary waves-effect waves-light right" title="Inserir" href="/Materiais/formulario" role="button" ><i class="fas fa-plus"></i></a>
+                                                <a style="margin-left: 5px;" class="btn btn-primary waves-effect waves-light right" title="Inserir" href="/Grupos/formulario" role="button" ><i class="fas fa-plus"></i></a>
                                                 <a style="margin-left: 5px;" class="btn btn-secondary waves-effect waves-light right" title="Voltar" href="/" role="button" ><i class="fas fa-reply"></i></a>
                                             </div>
                                         </div>
                                     </div>
-                                    <table id="materiais" class="table responsive table-hover table-striped compact display" style="position: static;" width="100%">
+                                    <table id="grupos" class="table responsive table-hover table-striped compact display" style="position: static;" width="100%">
                                         <thead>
                                             <tr>
-                                                <th>Descricao</th>
-                                                <th>Grupo</th>
-                                                <th>Unidade de Medida</th>
+                                                <th>Id</th>
+                                                <th>Nome</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
@@ -49,15 +48,14 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#materiais').DataTable({
+            $('#grupos').DataTable({
                 ajax: {
-                    url: "/Materiais/listagem_materiais",
+                    url: "/Grupos/listagem",
                     type: "post"
                 },
                 columns:[
-                    { data: "Descricao" },
+                    { data: "Id" },
                     { data: "Nome" },
-                    { data: "Unidade_de_medida" },
                     { data: null, "orderable": false, 'responsivePriority': 1, "className": "dt-nowrap" },
                 ],
                 columnDefs: [
@@ -65,13 +63,13 @@
                 ],
                 createdRow: function (row, data, dataIndex) {
                     $(row).attr('data-id', data.Id);
-                    var botoes = '<a href="/Materiais/formulario/'+ data.Id +'" title="Editar" class="meutooltip"><i class= "mdi mdi-18px mdi-file-edit" ></i></a>';
+                    var botoes = '<a href="/Grupos/formulario/'+ data.Id +'" title="Editar" class="meutooltip"><i class= "mdi mdi-18px mdi-file-edit" ></i></a>';
                     $('td', row).eq(row.childElementCount-1).html(botoes);
                 }
             });
 
-            $('#materiais').on("dblclick", "tr:has(td)", function(e) {
-                window.open("/Materiais/formulario/" + $(this).attr("data-id"),"_blank");
+            $('#grupos').on("dblclick", "tr:has(td)", function(e) {
+                window.open("/Grupos/formulario/" + $(this).attr("data-id"),"_blank");
             });
         });
     </script>

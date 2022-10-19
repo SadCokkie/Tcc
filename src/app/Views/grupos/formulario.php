@@ -12,17 +12,15 @@
                                     <!-- ============================================================== -->
                                     <!-- Start Content here -->
                                     <!-- ============================================================== -->
-                                    <form id="formulario_materiais" style="position: static;" width="100%" action="/Materiais/salvar" method="post">
+                                    <form id="formulario_grupos" style="position: static;" width="100%" action="/Grupos/salvar" method="post">
                                         <div class="row">
                                             <?= hidden('Id', isset($registro) ? $registro['Id'] : '');?>
-                                            <?= input('Descrição','Descricao',4,isset($registro) ? rtrim($registro['Descricao']) : '','text'); ?>
-                                            <?= input('Grupo','IdGrupo',2,isset($registro) ? rtrim($registro['IdGrupo']) : '','datalist', $grupos); ?>
-                                            <?= input('Unidade de Medida','Unidade_de_medida',4,isset($registro) ? rtrim($registro['Unidade_de_medida']) : '','text'); ?>
+                                            <?= input('Nome','Nome',4,isset($registro) ? rtrim($registro['Nome']) : '','text'); ?>
                                         </div>
                                         <div class="right" style="margin-top: 5px;">
-                                            <a href="/Materiais" class="btn btn-secondary"><i class="fas fa-reply"></i></a>
+                                            <a href="/Grupos" class="btn btn-secondary"><i class="fas fa-reply"></i></a>
                                             <button class="btn btn-primary" type="submit"><i class="fas fa-check"></i></button>
-                                            <?= $edit == true ? '<a href="/Materiais/excluir/'.$registro['Id'].'" class="btn btn-dark"><i class="fas fa-trash"></i></a>' : '' ?>
+                                            <?= $edit == true ? '<a href="/Grupos/excluir/'.$registro['Id'].'" class="btn btn-dark"><i class="fas fa-trash"></i></a>' : '' ?>
                                         </div>
                                     </form>
                                     <!-- ============================================================== -->

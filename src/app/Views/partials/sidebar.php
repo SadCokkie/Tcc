@@ -19,6 +19,7 @@
                     <ul>
                         <li><a href="Materiais/">Materiais</a></li>
                         <li><a href="Cas/">Centros de Armazenagem</a></li>
+                        <li><a href="Grupos/">Grupos de Materiais</a></li>
                     </ul>
                 </li>
                 <li>

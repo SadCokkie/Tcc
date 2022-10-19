@@ -4,7 +4,7 @@ class MateriaisModel extends CoreModel
 {
     protected $table = 'Materiais';
     protected $primaryKey = 'Id';
-    protected $allowedFields = ['Id', 'Descricao', 'Grupo', 'Unidade_de_medida'];
+    protected $allowedFields = ['Id', 'Descricao', 'IdGrupo', 'Unidade_de_medida'];
     protected $validationRules = [
         'Id' => 'required|is_unique[Materiais.Id]'
     ];
@@ -17,17 +17,19 @@ class MateriaisModel extends CoreModel
             $where .= " AND
                 (M.Id LIKE '%".$search."%' OR
                 M.Descricao LIKE '%".$search."%' OR
-                M.Grupo LIKE '%".$search."%' OR
+                G.Nome LIKE '%".$search."%' OR
                 M.Unidade_de_medida LIKE '%".$search."%'
             ";
         }
 
         $query =$this->db->query("SELECT 
             M.Id,
+            M.IdGrupo,
             RTRIM(M.Descricao) Descricao,
-            RTRIM(M.Grupo) Grupo,
+            RTRIM(G.Nome) Nome,
             RTRIM(M.Unidade_de_medida) Unidade_de_medida
         FROM Materiais M
+        LEFT OUTER JOIN GruposMateriais G ON M.IdGrupo = G.Id
         $where
         ORDER BY $campo $direcao
         OFFSET $start ROWS
@@ -59,5 +61,16 @@ class MateriaisModel extends CoreModel
     public function excluir($id)
     {
         return $this->db->table('Materiais')->where('Id',$id)->delete();
+    }
+
+    public function listaGrupos()
+    {
+        $query = $this->db->query("SELECT * FROM GruposMateriais");
+        $data = $query->getResultArray();
+        foreach ($data as $key => $value) {
+            $response[$key] = ['id' => $value['Id'], 'descricao' => $value['Nome']];
+        }
+        // debug($response);
+        return $response;
     }
 }

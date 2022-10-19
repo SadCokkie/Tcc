@@ -4,16 +4,16 @@ use CodeIgniter\API\ResponseTrait;
 
 use function PHPUnit\Framework\isEmpty;
 
-class Materiais extends CoreController
+class Grupos extends CoreController
 {
-    private $materialModel;
+    private $grupoModel;
     protected $request;
     use ResponseTrait;
 
     public function __construct()
     {
         parent::__construct();
-        $this->materialModel = new \App\Models\MateriaisModel();
+        $this->grupoModel = new \App\Models\GruposModel();
         $this->request = \Config\Services::request();
         helper('functions');
     }
@@ -21,12 +21,12 @@ class Materiais extends CoreController
     public function index()
     {
         // debug('a');
-        $data['titulo'] = 'Materiais';
+        $data['titulo'] = 'Grupos';
         $data['sidebar'] = $this->sidebar;
-        return view('materiais/listagem',$data);
+        return view('grupos/listagem',$data);
     }
 
-    public function listagem_materiais()
+    public function listagem()
     {
         $data    = $this->request->getPost();
         $start	 = $data["start"]; // valor inicial limit
@@ -35,7 +35,7 @@ class Materiais extends CoreController
         $order	 = $data["order"]; // pega qual campo vai ser ordenado
         $campo   = $data["columns"][$order[0]["column"]]["data"]; // pega o nome do campo que sera ordenado
         $direcao = $order[0]["dir"]; // pega o nome do campo que sera ordenado
-        $listagem = $this->materialModel->listagem_materiais($start, $length, $campo, $direcao, $search);
+        $listagem = $this->grupoModel->listagem($start, $length, $campo, $direcao, $search);
         echo json_encode($listagem);
     }
 
@@ -44,29 +44,26 @@ class Materiais extends CoreController
         // debug($_POST);
         if (!$this->validate([
             'Id' => 'trim',
-            'Descricao' => ['rules' => 'required', 'errors' => ['required' => 'Campo Descrição é obrigatório.']],
-            'Unidade_de_medida' => ['rules' => 'required', 'errors' => ['required' => 'Campo Unidade de Medida é obrigatório.']],
+            'Nome' => ['rules' => 'required', 'errors' => ['required' => 'Campo Descrição é obrigatório.']],
             ])) {
             // debug('teste');
             return $this->formulario($_POST);
-            exit;
         } else {
             $id = $_POST['Id'];
             unset($_POST['Id']);
             if($id == '') {
-                $this->materialModel->inserir($_POST);
+                $this->grupoModel->inserir($_POST);
             } else {
-                $this->materialModel->editar($id, $_POST);
+                $this->grupoModel->editar($id, $_POST);
             }
             notificacao($id == '' ? 'Inserido com sucesso!' : 'Dados atualizados!');
             return $this->index();
-            exit;
         }
     }
 
     public function excluir($id = null)
     {
-        $this->materialModel->excluir($id);
+        $this->grupoModel->excluir($id);
         notificacao($id == '' ? 'Usuário não encontrado!' : 'Excluido com sucesso!');
         return $this->index();
     }
@@ -80,10 +77,9 @@ class Materiais extends CoreController
         // debug($id);
         $data['titulo'] = $id == null ? 'Inserir' : 'Editar';
         $data['edit'] = false;
-        $data['grupos'] = $this->materialModel->listaGrupos();
         
         if ($id != null && ! is_array($id)) {
-            $data['registro'] = $this->find($id,$this->materialModel);
+            $data['registro'] = $this->find($id,$this->grupoModel);
             $data['edit'] = true;
         }
         
@@ -91,7 +87,7 @@ class Materiais extends CoreController
             $data['registro'] = $_POST;
             $data['errors'] = $this->validation->getErrors();
         }
-        return view('materiais/formulario',$data);
+        return view('grupos/formulario',$data);
     }
 
 }
