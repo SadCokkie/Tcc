@@ -32,7 +32,7 @@
                     </div>
                 </div>
                 <?= $this->include('partials/footer') ?>
-                <?= $this->include('modals/cadastros') ?>
+                
             </div>
         </div>
     </div>

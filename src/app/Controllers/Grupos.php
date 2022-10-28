@@ -57,7 +57,7 @@ class Grupos extends CoreController
                 $this->grupoModel->editar($id, $_POST);
             }
             notificacao($id == '' ? 'Inserido com sucesso!' : 'Dados atualizados!');
-            return $this->index();
+            return redirect()->to('/Grupos/');
         }
     }
 

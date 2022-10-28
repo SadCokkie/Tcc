@@ -4,29 +4,30 @@ use CodeIgniter\API\ResponseTrait;
 
 use function PHPUnit\Framework\isEmpty;
 
-class Materiais extends CoreController
+class Movimentacoes extends CoreController
 {
-    private $materialModel;
+    private $movimentacaoModel;
     protected $request;
     use ResponseTrait;
 
     public function __construct()
     {
         parent::__construct();
-        $this->materialModel = new \App\Models\MateriaisModel();
+        $this->movimentacaoModel = new \App\Models\MovimentacoesModel();
         $this->request = \Config\Services::request();
         helper('functions');
     }
-
+    
     public function index()
     {
-        // debug('a');
-        $data['titulo'] = 'Materiais';
+        $data['Tipo'] = $_GET['Entrada'];
+        // debug($data['Tipo']);
+        $data['titulo'] = 'Movimentacoes';
         $data['sidebar'] = $this->sidebar;
-        return view('materiais/listagem',$data);
+        return view('movimentacoes/listagem',$data);
     }
 
-    public function listagem_materiais()
+    public function listagem_movimentacoes()
     {
         $data    = $this->request->getPost();
         $start	 = $data["start"]; // valor inicial limit
@@ -35,7 +36,7 @@ class Materiais extends CoreController
         $order	 = $data["order"]; // pega qual campo vai ser ordenado
         $campo   = $data["columns"][$order[0]["column"]]["data"]; // pega o nome do campo que sera ordenado
         $direcao = $order[0]["dir"]; // pega o nome do campo que sera ordenado
-        $listagem = $this->materialModel->listagem_materiais($start, $length, $campo, $direcao, $search);
+        $listagem = $this->movimentacaoModel->listagem($start, $length, $campo, $direcao, $search, $_POST['Tipo']);
         echo json_encode($listagem);
     }
 
@@ -53,18 +54,18 @@ class Materiais extends CoreController
             $id = $_POST['Id'];
             unset($_POST['Id']);
             if($id == '') {
-                $this->materialModel->inserir($_POST);
+                $this->movimentacaoModel->inserir($_POST);
             } else {
-                $this->materialModel->editar($id, $_POST);
+                $this->movimentacaoModel->editar($id, $_POST);
             }
             notificacao($id == '' ? 'Inserido com sucesso!' : 'Dados atualizados!');
-            return redirect()->to('/Materiais/');//$this->index();
+            return redirect()->to('/movimentacoes/');//$this->index();
         }
     }
 
     public function excluir($id = null)
     {
-        $this->materialModel->excluir($id);
+        $this->movimentacaoModel->excluir($id);
         notificacao($id == '' ? 'Usuário não encontrado!' : 'Excluido com sucesso!');
         return $this->index();
     }
@@ -78,10 +79,10 @@ class Materiais extends CoreController
         // debug($id);
         $data['titulo'] = $id == null ? 'Inserir' : 'Editar';
         $data['edit'] = false;
-        $data['grupos'] = $this->materialModel->listaGrupos();
+        $data['Tipo'] = $_GET['Tipo'];
         
         if ($id != null && ! is_array($id)) {
-            $data['registro'] = $this->find($id,$this->materialModel);
+            $data['registro'] = $this->find($id,$this->movimentacaoModel);
             $data['edit'] = true;
         }
         
@@ -91,7 +92,18 @@ class Materiais extends CoreController
         }
 
         // debug($data['grupos']);
-        return view('materiais/formulario',$data);
+        switch ($data['Tipo']) {
+            case 0:
+                return view('movimentacoes/formulario_entrada',$data);
+                break;
+            case 1:
+                return view('movimentacoes/formulario_saida',$data);
+                break;
+            case 2:
+                return view('movimentacoes/formulario_transferencia',$data);
+                break;
+        }
+        
     }
 
 }

@@ -68,7 +68,7 @@ class MateriaisModel extends CoreModel
         $query = $this->db->query("SELECT * FROM GruposMateriais");
         $data = $query->getResultArray();
         foreach ($data as $key => $value) {
-            $response[$key] = ['id' => $value['Id'], 'descricao' => $value['Nome']];
+            $response[$key + 1] = ['id' => $value['Id'], 'descricao' => $value['Nome']];
         }
         // debug($response);
         return $response;

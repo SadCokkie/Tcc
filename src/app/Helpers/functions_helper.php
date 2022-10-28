@@ -207,17 +207,9 @@ if (!  function_exists("typeahead")) {
     }
 }
 
-if(! function_exists("empresa")){
-    function empresa($rotulo, $id, $tamanho, $valor){
-        $field = '<input name="'.$id.'" class="form-control form-control-sm" type="text" value="'.$valor.'" id="'.$id.'"><a class="botao-interno" onclick="empresa()"><i class= "fas fa-search"></i></a>';
-        $input = '<div class="col-'.$tamanho.'"><label class="form-label">'.$rotulo.'</label>'.$field.'</div>';
-        return $input;
-    }
-}
-
-if(! function_exists("empresa_multipla")){
-    function empresa_multipla($rotulo, $id, $tamanho, $valor){
-        $field = '<input name="'.$id.'" class="form-control form-control-sm" type="text" value="'.$valor.'" id="'.$id.'"><a class="botao-interno" onclick="empresa('.$id.')"><i class= "fas fa-search"></i></a>';
+if(! function_exists("buscar")){
+    function buscar($rotulo, $id, $tamanho, $valor){
+        $field = '<input name="'.$id.'" class="form-control form-control-sm" type="text" value="'.$valor.'" id="'.$id.'"><a class="botao-interno" onclick="buscar('.$id.')"><i class= "fas fa-search"></i></a>';
         $input = '<div class="col-'.$tamanho.'"><label class="form-label">'.$rotulo.'</label>'.$field.'</div>';
         return $input;
     }

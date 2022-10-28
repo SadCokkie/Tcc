@@ -64,15 +64,16 @@ class Usuarios extends CoreController
                 $this->usuarioModel->editar($id, $_POST);
             }
             notificacao($id == '' ? 'Inserido com sucesso!' : 'Dados atualizados!');
-            return $this->index();
+            return redirect()->to('/Usuarios');
         }
     }
 
     public function excluir($id = null)
     {
+        // debug($id);
         $this->usuarioModel->excluir($id);
         notificacao($id == '' ? 'Usuário não encontrado!' : 'Excluido com sucesso!');
-        return $this->index();
+        return redirect()->to('/Usuarios');
     }
 
     public function login()
@@ -84,14 +85,14 @@ class Usuarios extends CoreController
     public function logar()
     {
         $session = session();
-        // debug($post);
+        // debug($_POST);
         $usuario = null;
         $senha = $_POST['userpassword'] != '' ? md5('ABACATE'.strtoupper($_POST['userpassword'])) : '';
+        
         $usuario = $this->usuarioModel->login(strtoupper($_POST['username']), $senha);
-        // debug($usuario);
         $url = '/';
         if($usuario != null) {
-            if (!isset($_POST['userpassword']) || $_POST['userpassword'] == '') {
+            if ((!isset($_POST['userpassword']) || $_POST['userpassword'] == '') ) {
                 // debug('teste');
                 return redirect()->to("alterar_senha/?Usuario='".$_POST['username']."'");
             }else{
@@ -136,21 +137,23 @@ class Usuarios extends CoreController
             $data['registro'] = $_POST;
             $data['errors'] = $this->validation->getErrors();
         }
-        return view('usuarios/formulario',$data);
+        // debug($data['registro']);
+        return view('usuarios/formulario',$data); 
     }    
 
     public function alterar_senha()
     {
-        $post['usuario'] = $_GET['usuario'];
+        $post['Usuario'] = $_GET['Usuario'];
         // debug($post);
-        $post['titulo'] = 'Portal CIGAM | Alterar Senha';
-        $usuario = $this->usuarioModel->getUsuario($post['usuario']);
-        $post['senhaAtual'] = $usuario['Senha'];
+        $post['titulo'] = 'Portal AGROSYS | Alterar Senha';
+        $usuario = $this->usuarioModel->getUsuario($post['Usuario']);
         // debug($usuario);
+        $post['senhaAtual'] = $usuario['Senha'];
         if(($usuario['Senha'] == '' && session()->get('logged_in') == null) || ($usuario['Senha'] != '' && session()->get('logged_in') != null)){
+            // debug($usuario);
             return view('usuarios/alterarSenha', $post);
         }else{
-            return $this->login();
+            return redirect()->to('login');
         }
     }
 
@@ -159,18 +162,21 @@ class Usuarios extends CoreController
         //conferir se o usuário tem senha em branco e se está logado,
         //caso o usuário já tenha senha e não esteja logado não pode alterar a senha
         // debug($_POST);
-        $usuario = $this->usuarioModel->getUsuario($_POST['usuario']);        
+        $usuario = $this->usuarioModel->getUsuario($_POST['Usuario']);        
         // debug($usuario);
         $senhaLogar = $_POST['newpassword'];
-        $senhaNova = md5('CIGAM'.strtoupper($_POST['newpassword']));
-        $confirmaSenhaNova = md5('CIGAM'.strtoupper($_POST['confirmnewpassword']));
+        $senhaNova = md5('ABACATE'.strtoupper($_POST['newpassword']));
+        $confirmaSenhaNova = md5('ABACATE'.strtoupper($_POST['confirmnewpassword']));
         if($senhaNova == $confirmaSenhaNova){
             $usuario['Senha'] = $senhaNova;
-            $this->usuarioModel->editar($usuario['Cd_USUARIO'], $usuario);
+            // debug($usuario);
+            $id = $usuario['Id'];
+            unset($usuario['Id']);
+            $this->usuarioModel->editar($id, $usuario);
             unset($_POST);
             $_POST['userpassword'] = $senhaLogar;
             $_POST['username'] = $usuario['Usuario'];
-            return $this->logar();
+            return redirect()->to('login');
         }
         
     }

@@ -69,6 +69,7 @@ class UsuariosModel extends CoreModel
 
     public function excluir($id)
     {
+        // debug($id);
         return $this->db->table('Usuarios')->where('Id',$id)->delete();
     }
 
