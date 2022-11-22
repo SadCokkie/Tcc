@@ -67,7 +67,23 @@ class MovimentacoesModel extends CoreModel
 
     public function inserir($data)
     {
-        return $this->db->table('Movimentacoes')->insert($data);
+        // debug($data);
+        switch ($data['Tipo']) {
+            case 0:
+                $movimentacao['Entrada'] = $data['Tipo'];
+                unset($data['Tipo']);
+                $this->db->table('Estoque')->insert($data);
+                $movimentacao['Id_estoque'] = $this->db->query("SELECT IDENT_CURRENT('Estoque') Id_estoque")->getRow()->Id_estoque;
+                $movimentacao['Quantidade'] = $data['Quantidade'];
+                $this->db->table('Movimentacoes')->insert($movimentacao);
+                break;
+            case 1:
+                # code...
+                break;
+            case 2:
+                # code...
+                break;
+        }
     }
 
     public function editar($id, $data)

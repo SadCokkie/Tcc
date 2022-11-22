@@ -22,7 +22,7 @@ class Movimentacoes extends CoreController
     {
         $data['Tipo'] = $_GET['Entrada'];
         // debug($data['Tipo']);
-        $data['titulo'] = 'Movimentacoes';
+        $data['titulo'] = 'Movimentações';
         $data['sidebar'] = $this->sidebar;
         return view('movimentacoes/listagem',$data);
     }
@@ -42,25 +42,41 @@ class Movimentacoes extends CoreController
 
     public function salvar()
     {
-        // debug($_POST);
-        if (!$this->validate([
-            'Id' => 'trim',
-            'Descricao' => ['rules' => 'required', 'errors' => ['required' => 'Campo Descrição é obrigatório.']],
-            'Unidade_de_medida' => ['rules' => 'required', 'errors' => ['required' => 'Campo Unidade de Medida é obrigatório.']],
-            ])) {
-            // debug('teste');
-            return $this->formulario($_POST);
-        } else {
-            $id = $_POST['Id'];
-            unset($_POST['Id']);
-            if($id == '') {
-                $this->movimentacaoModel->inserir($_POST);
-            } else {
-                $this->movimentacaoModel->editar($id, $_POST);
-            }
-            notificacao($id == '' ? 'Inserido com sucesso!' : 'Dados atualizados!');
-            return redirect()->to('/movimentacoes/');//$this->index();
+        switch ($_POST['Tipo']) {
+            case 0:
+                if (!$this->validate([
+                    'Id' => 'trim',
+                    'Tipo' => 'trim',
+                    'Quantidade' => ['rules' => 'required', 'errors' => ['required' => 'Campo Quantidade é obrigatório.']],
+                    'Id_material' => ['rules' => 'required', 'errors' => ['required' => 'Campo Material é obrigatório.']],
+                    'Id_Ca' => ['rules' => 'required', 'errors' => ['required' => 'Campo CA é obrigatório.']],
+                    ])) {
+                    // debug('teste');
+                    return $this->formulario($_POST);
+                }else{
+                    $aux = explode('-', trim($_POST['Id_material']));
+                    $_POST['Id_material'] = $aux[0];
+                    $aux = explode('-', trim($_POST['Id_Ca']));
+                    $_POST['Id_Ca'] = $aux[0];
+                }
+                break;
+            case 1:
+                # code...
+                break;
+            case 2:
+                # code...
+                break;
         }
+        $id = $_POST['Id'];
+        unset($_POST['Id']);
+        // debug($_POST);
+        if($id == '') {
+            $this->movimentacaoModel->inserir($_POST);
+        } else {
+            $this->movimentacaoModel->editar($id, $_POST);
+        }
+        notificacao($id == '' ? 'Inserido com sucesso!' : 'Dados atualizados!');
+        return redirect()->to('/movimentacoes/?Entrada='.$_POST['Tipo']);//$this->index();
     }
 
     public function excluir($id = null)

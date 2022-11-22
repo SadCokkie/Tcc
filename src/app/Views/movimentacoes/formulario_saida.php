@@ -12,17 +12,19 @@
                                     <!-- ============================================================== -->
                                     <!-- Start Content here -->
                                     <!-- ============================================================== -->
-                                    <form id="formulario_materiais" style="position: static;" width="100%" action="/Materiais/salvar" method="post">
+                                    <form id="formulario_movimentacoes" style="position: static;" width="100%" action="/Movimentacoes/salvar" method="post">
                                         <div class="row">
                                             <?= hidden('Id', isset($registro) ? $registro['Id'] : '');?>
-                                            <?= input('Descrição','Descricao',4,isset($registro) ? rtrim($registro['Descricao']) : '','text'); ?>
-                                            <?= input('Grupo','IdGrupo',2,isset($registro) ? rtrim($registro['IdGrupo']) : '','datalist', $grupos); ?>
-                                            <?= input('Unidade de Medida','Unidade_de_medida',4,isset($registro) ? rtrim($registro['Unidade_de_medida']) : '','text'); ?>
+                                            <?= hidden('Tipo', $Tipo);?>
+                                            <?= buscar('Centro de Armazenagem','Id_Ca',4,isset($registro) ? rtrim($registro['Id_Ca']) : ''); ?>
+                                            <?= buscar('Material','Id_material',4,isset($registro) ? rtrim($registro['Id_material']) : ''); ?>
+                                            <?= input('Estoque','Estoque',2,0,'text', null, 'readonly'); ?>
+                                            <?= input('Quantidade','Quantidade',2,isset($registro) ? rtrim($registro['Quantidade']) : '','text'); ?>
                                         </div>
                                         <div class="right" style="margin-top: 5px;">
-                                            <a href="/Materiais" class="btn btn-secondary"><i class="fas fa-reply"></i></a>
+                                            <a href="/Movimentacoes?Entrada=<?= $Tipo?>" class="btn btn-secondary"><i class="fas fa-reply"></i></a>
                                             <button class="btn btn-primary" type="submit"><i class="fas fa-check"></i></button>
-                                            <?= $edit == true ? '<a href="/Materiais/excluir/'.$registro['Id'].'" class="btn btn-dark"><i class="fas fa-trash"></i></a>' : '' ?>
+                                            <?= $edit == true ? '<a href="/Movimentacoes/excluir/'.$registro['Id'].'" class="btn btn-dark"><i class="fas fa-trash"></i></a>' : '' ?>
                                         </div>
                                     </form>
                                     <!-- ============================================================== -->
@@ -34,12 +36,75 @@
                     </div>
                 </div>
                 <?= $this->include('partials/footer') ?>
-                <?= $this->include('modals/cadastros') ?>
+                <?= $this->include('modals/materiais') ?>
+                <?= $this->include('modals/cas') ?>
             </div>
         </div>
     </div>
     <!-- SCRIPTS -->
     <?= $this->include('partials/scripts') ?>
+    <script type="text/javascript">
+         $('#Id_material').click(function(){
+            if($('#Id_Ca').val() == ''){
+                document.getElementById("Id_Ca").focus();
+            }else{
+                $('#materiais_modal').modal('show');
+            }
+        });
+        
+        $('#Id_Ca').click(function(){
+            $('#cas_modal').modal('show');
+        });
+
+        $(document).ready(function() {
+            
+
+            $('#materiais').on("dblclick", "tr:has(td)", function(e) {
+                $('#Id_material').val($(this).attr("data-id"));
+                $('#materiais_modal').modal('hide');
+            });
+
+            $('#cas').DataTable({
+                ajax: {
+                    url: "/Cas/listagem_cas",
+                    type: "post"
+                },
+                columns:[
+                    { data: "Descricao" },
+                ],
+                columnDefs: [
+                    {className: "dt-center", targets: "_all"}
+                ],
+                createdRow: function (row, data, dataIndex) {
+                    $(row).attr('data-id', data.Id + ' - ' + data.Descricao);
+                }
+            });
+
+            $('#cas').on("dblclick", "tr:has(td)", function(e) {
+                $('#Id_Ca').val($(this).attr("data-id"));
+                $('#cas_modal').modal('hide');
+                $('#materiais').DataTable({
+                ajax: {
+                    url: "/Materiais/listagem_materiais",
+                    data: {ca : $('#Id_Ca').val()},
+                    type: "post"
+                },
+                columns:[
+                    { data: "Descricao" },
+                    { data: "Nome" },
+                    { data: "Unidade_de_medida" },
+                ],
+                columnDefs: [
+                    {className: "dt-center", targets: "_all"}
+                ],
+                createdRow: function (row, data, dataIndex) {
+                    $(row).attr('data-id', data.Id + ' - ' + data.Descricao);
+                }
+            });
+            });
+
+        })
+    </script>
 </body>
 
 </html>

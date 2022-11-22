@@ -33,7 +33,7 @@
             </div>
             <div>
                 <!-- LOGO -->
-                <div class="d-lg-inline-block" style="margin-right: 10px;">
+                <div class="d-lg-inline-block" style="margin-right: 18px;">
                     <a href="/" class="logo logo-dark">
                         <span class="logo-lg">
                             <img src="/assets/images/logo-dark.png" alt="logo" height="17">
@@ -41,7 +41,7 @@
                     </a>
                     <a href="/" class="logo logo-light">
                         <span class="logo-lg">
-                            <img src="/assets/images/logo-light.png" alt="logo" height="19">
+                            <img src="/assets/images/logo-light.png" alt="logo" height="25">
                         </span>
                     </a>
                 </div>

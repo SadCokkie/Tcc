@@ -66,7 +66,7 @@
                     {className: "dt-center", targets: "_all"}
                 ],
                 createdRow: function (row, data, dataIndex) {
-                    $(row).attr('data-id', data.Id + ' - ' + data.Nome_completo);
+                    $(row).attr('data-id', data.Id + ' - ' + data.Descricao);
                 }
             });
 
@@ -87,7 +87,7 @@
                     {className: "dt-center", targets: "_all"}
                 ],
                 createdRow: function (row, data, dataIndex) {
-                    $(row).attr('data-id', data.Id + ' - ' + data.Nome_completo);
+                    $(row).attr('data-id', data.Id + ' - ' + data.Descricao);
                 }
             });
 

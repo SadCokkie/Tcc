@@ -25,7 +25,7 @@
                                     <table id="movimentacoes" class="table responsive table-hover table-striped compact display" style="position: static;" width="100%">
                                         <thead>
                                             <tr>
-                                                <th>Id Movimentação</th>
+                                                <th>Movimentação</th>
                                                 <th>Material</th>
                                                 <th>Unidade de Medida</th>
                                                 <th>Quantidade</th>
