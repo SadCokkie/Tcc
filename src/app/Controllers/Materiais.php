@@ -30,15 +30,13 @@ class Materiais extends CoreController
     {
         $data    = $this->request->getPost();
         // debug($data);
-        $aux = explode('-', trim($_POST['ca']));
-        $ca = $aux[0];
         $start	 = $data["start"]; // valor inicial limit
         $length	 = $data["length"]; 
         $search  = $data["search"]["value"];
         $order	 = $data["order"]; // pega qual campo vai ser ordenado
         $campo   = $data["columns"][$order[0]["column"]]["data"]; // pega o nome do campo que sera ordenado
         $direcao = $order[0]["dir"]; // pega o nome do campo que sera ordenado
-        $listagem = $this->materialModel->listagem_materiais($start, $length, $campo, $direcao, $search,$ca);
+        $listagem = $this->materialModel->listagem_materiais($start, $length, $campo, $direcao, $search);
         echo json_encode($listagem);
     }
 
@@ -95,6 +93,22 @@ class Materiais extends CoreController
 
         // debug($data['grupos']);
         return view('materiais/formulario',$data);
+    }
+
+    public function listagem_saida()
+    {
+        $data    = $this->request->getPost();
+        // debug($data);
+        $aux = explode('-', trim($_POST['ca']));
+        $ca = $aux[0];
+        $start	 = $data["start"]; // valor inicial limit
+        $length	 = $data["length"]; 
+        $search  = $data["search"]["value"];
+        $order	 = $data["order"]; // pega qual campo vai ser ordenado
+        $campo   = $data["columns"][$order[0]["column"]]["data"]; // pega o nome do campo que sera ordenado
+        $direcao = $order[0]["dir"]; // pega o nome do campo que sera ordenado
+        $listagem = $this->materialModel->listagem_saida($start, $length, $campo, $direcao, $search, $ca);
+        echo json_encode($listagem);
     }
 
 }

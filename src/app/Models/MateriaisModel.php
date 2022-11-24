@@ -9,13 +9,9 @@ class MateriaisModel extends CoreModel
         'Id' => 'required|is_unique[Materiais.Id]'
     ];
 
-    public function listagem_materiais($start = null, $length = null, $campo = null, $direcao = null, $search = null, $ca = null)
+    public function listagem_materiais($start = null, $length = null, $campo = null, $direcao = null, $search = null)
     {
         $where = "WHERE 1=1";
-
-        if($ca != null){
-            $where .= " AND E.Id_ca = $ca";   
-        }
 
         if ($search != "") {
             $where .= " AND
@@ -31,11 +27,9 @@ class MateriaisModel extends CoreModel
             M.IdGrupo,
             RTRIM(M.Descricao) Descricao,
             RTRIM(G.Nome) Nome,
-            RTRIM(M.Unidade_de_medida) Unidade_de_medida,
-            E.Quantidade
+            RTRIM(M.Unidade_de_medida) Unidade_de_medida
         FROM Materiais M
         LEFT OUTER JOIN GruposMateriais G ON M.IdGrupo = G.Id
-        LEFT OUTER JOIN Estoque E ON M.Id = E.Id_material
         $where
         ORDER BY $campo $direcao
         OFFSET $start ROWS
@@ -44,11 +38,7 @@ class MateriaisModel extends CoreModel
         $response['data'] = $query->getResultArray();
         $response['lastQuery'] = $this->db->getLastQuery()->getQuery();
         // debug($response['lastQuery']);
-        if($ca != null){
-            $countall = $this->db->query("SELECT COUNT(*) Resultados FROM Materiais M LEFT OUTER JOIN Estoque E ON M.Id = E.Id_material $where")->getRowArray();
-        }else{
-            $countall = $this->db->query("SELECT COUNT(*) Resultados FROM Materiais M")->getRowArray();
-        }
+        $countall = $this->db->query("SELECT COUNT(*) Resultados FROM Materiais M")->getRowArray();
         // debug($countall->getRowArray());
         $response['recordsFiltered'] = $countall['Resultados'];
         $response['recordsTotal'] = $countall['Resultados'];
@@ -81,6 +71,54 @@ class MateriaisModel extends CoreModel
             $response[$key + 1] = ['id' => $value['Id'], 'descricao' => $value['Nome']];
         }
         // debug($response);
+        return $response;
+    }
+
+    public function listagem_saida($start = null, $length = null, $campo = null, $direcao = null, $search = null, $ca = null)
+    {
+        $where = "WHERE 1=1";
+
+        $where .= " AND E.Id_ca = $ca";
+
+        if ($search != "") {
+            $where .= " AND
+                (M.Id LIKE '%".$search."%' OR
+                M.Descricao LIKE '%".$search."%' OR
+                G.Nome LIKE '%".$search."%' OR
+                M.Unidade_de_medida LIKE '%".$search."%'
+            ";
+        }
+
+        $query =$this->db->query("SELECT 
+            M.Id,
+            M.IdGrupo,
+            RTRIM(M.Descricao) Descricao,
+            RTRIM(G.Nome) Nome,
+            RTRIM(M.Unidade_de_medida) Unidade_de_medida,
+            sum(E.Quantidade) Estoque
+        FROM Materiais M
+        LEFT OUTER JOIN GruposMateriais G ON M.IdGrupo = G.Id
+        LEFT OUTER JOIN Estoque E ON M.Id = E.Id_material
+        $where
+        GROUP BY  
+        M.Id,
+        M.IdGrupo,
+        Descricao,
+        Nome,
+        Unidade_de_medida
+        ORDER BY $campo $direcao
+        OFFSET $start ROWS
+        FETCH NEXT $length ROWS ONLY");
+
+        $response['data'] = $query->getResultArray();
+        $response['lastQuery'] = $this->db->getLastQuery()->getQuery();
+        // debug($response['lastQuery']);
+        $countall = $this->db->query("SELECT COUNT(*) Resultados FROM Materiais M")->getRowArray();
+        // debug($countall->getRowArray());
+        $response['recordsFiltered'] = $countall['Resultados'];
+        $response['recordsTotal'] = $countall['Resultados'];
+        $response['where'] = $where;
+
         return $response;
     }
 }

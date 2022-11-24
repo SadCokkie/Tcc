@@ -71,17 +71,63 @@ class MovimentacoesModel extends CoreModel
         switch ($data['Tipo']) {
             case 0:
                 $movimentacao['Entrada'] = $data['Tipo'];
-                unset($data['Tipo']);
-                $this->db->table('Estoque')->insert($data);
-                $movimentacao['Id_estoque'] = $this->db->query("SELECT IDENT_CURRENT('Estoque') Id_estoque")->getRow()->Id_estoque;
                 $movimentacao['Quantidade'] = $data['Quantidade'];
+                unset($data['Tipo']);
+                $estoque = isset($this->db->query("SELECT Id FROM Estoque WHERE Id_ca = ".$data['Id_Ca']." AND Id_material = ". $data['Id_material'])->getRow()->Id) ? $this->db->query("SELECT Id FROM Estoque WHERE Id_ca = ".$data['Id_Ca']." AND Id_material = ". $data['Id_material'])->getRow()->Id : 0;
+                if($estoque == 0){
+                    $this->db->table('Estoque')->insert($data);
+                    $movimentacao['Id_estoque'] = $this->db->query("SELECT IDENT_CURRENT('Estoque') Id_estoque")->getRow()->Id_estoque;
+                }else{
+                    $data['Quantidade'] += $this->db->query("SELECT Quantidade FROM Estoque WHERE Id =".$estoque)->getRow()->Quantidade;
+                    // debug($data['Quantidade']);
+                    $movimentacao['Id_estoque'] = $estoque;
+                    $this->db->table('Estoque')->where('Id',$estoque)->set($data)->update();
+                }
+                // debug($estoque);
                 $this->db->table('Movimentacoes')->insert($movimentacao);
                 break;
             case 1:
-                # code...
+                $movimentacao['Entrada'] = $data['Tipo'];
+                $movimentacao['Quantidade'] = $data['Quantidade'];
+                $data['Quantidade'] = $data['Estoque'] - $data['Quantidade'];
+                unset($data['Estoque']);
+                unset($data['Tipo']);
+                $estoque = $this->db->query("SELECT Id FROM Estoque WHERE Id_ca = ".$data['Id_Ca']." AND Id_material = ". $data['Id_material'])->getRow()->Id;
+                $this->db->table('Estoque')->where('Id',$estoque)->set($data)->update();
+                $movimentacao['Id_estoque'] = $estoque;
+                // debug($estoque);
+                $this->db->table('Movimentacoes')->insert($movimentacao);
                 break;
             case 2:
-                # code...
+                // montando insercao movimento
+                $movimentacao['Entrada'] = $data['Tipo'];
+                $movimentacao['Quantidade'] = $data['Quantidade'];
+                $movimentacao['Ca_transferencia'] = $data['Id_Ca'];
+                // montando a insercao/edicao do novo estoque
+                $novoEstoque['Quantidade'] = $data['Quantidade'];
+                $novoEstoque['Id_material'] = $data['Id_material'];
+                $novoEstoque['Id_ca'] = $data['Id_recebe'];
+                // debug($novoEstoque);
+                $estoque = isset($this->db->query("SELECT Id FROM Estoque WHERE Id_ca = ".$novoEstoque['Id_ca']." AND Id_material = ". $novoEstoque['Id_material'])->getRow()->Id) ? $this->db->query("SELECT Id FROM Estoque WHERE Id_ca = ".$novoEstoque['Id_ca']." AND Id_material = ". $novoEstoque['Id_material'])->getRow()->Id : 0;
+                if($estoque == 0){
+                    $this->db->table('Estoque')->insert($novoEstoque);
+                    $movimentacao['Id_estoque'] = $this->db->query("SELECT IDENT_CURRENT('Estoque') Id_estoque")->getRow()->Id_estoque;
+                }else{
+                    $novoEstoque['Quantidade'] += $this->db->query("SELECT Quantidade FROM Estoque WHERE Id =".$estoque)->getRow()->Quantidade;
+                    // debug($data['Quantidade']);
+                    $movimentacao['Id_estoque'] = $estoque;
+                    $this->db->table('Estoque')->where('Id',$estoque)->set($novoEstoque)->update();
+                }
+                // atualizando quantidade do estoque que esta sendo transferido
+                $data['Quantidade'] = $data['Estoque'] - $data['Quantidade'];
+                unset($data['Estoque']);
+                unset($data['Tipo']);
+                unset($data['Id_recebe']);
+                $ca_transferencia = $this->db->query("SELECT Id FROM Estoque WHERE Id_ca = ".$data['Id_Ca']." AND Id_material = ". $data['Id_material'])->getRow()->Id;
+                $this->db->table('Estoque')->where('Id',$ca_transferencia)->set($data)->update();
+                $movimentacao['Id_estoque'] = $estoque;
+                // debug($estoque);
+                $this->db->table('Movimentacoes')->insert($movimentacao);
                 break;
         }
     }

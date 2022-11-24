@@ -29,13 +29,17 @@ class Cas extends CoreController
     public function listagem_cas()
     {
         $data    = $this->request->getPost();
+        if(isset($_POST['ca'])){
+            $aux = explode('-', trim($_POST['ca']));
+            $ca = $aux[0];
+        }
         $start	 = $data["start"]; // valor inicial limit
         $length	 = $data["length"]; 
         $search  = $data["search"]["value"];
         $order	 = $data["order"]; // pega qual campo vai ser ordenado
         $campo   = $data["columns"][$order[0]["column"]]["data"]; // pega o nome do campo que sera ordenado
         $direcao = $order[0]["dir"]; // pega o nome do campo que sera ordenado
-        $listagem = $this->caModel->listagem_cas($start, $length, $campo, $direcao, $search);
+        $listagem = $this->caModel->listagem_cas($start, $length, $campo, $direcao, $search, isset($ca) ? $ca : null);
         echo json_encode($listagem);
     }
 

@@ -52,7 +52,8 @@ class Movimentacoes extends CoreController
                     'Id_Ca' => ['rules' => 'required', 'errors' => ['required' => 'Campo CA é obrigatório.']],
                     ])) {
                     // debug('teste');
-                    return $this->formulario($_POST);
+                    $_GET['Tipo'] = $_POST['Tipo'];
+                    return $this->formulario($_POST['Id']);
                 }else{
                     $aux = explode('-', trim($_POST['Id_material']));
                     $_POST['Id_material'] = $aux[0];
@@ -61,10 +62,55 @@ class Movimentacoes extends CoreController
                 }
                 break;
             case 1:
-                # code...
+                if (!$this->validate([
+                    'Id' => 'trim',
+                    'Tipo' => 'trim',
+                    'Quantidade' => ['rules' => 'required', 'errors' => ['required' => 'Campo Quantidade é obrigatório.']],
+                    'Id_material' => ['rules' => 'required', 'errors' => ['required' => 'Campo Material é obrigatório.']],
+                    'Id_Ca' => ['rules' => 'required', 'errors' => ['required' => 'Campo CA é obrigatório.']],
+                    ])) {
+                    // debug('teste');
+                    $_GET['Tipo'] = $_POST['Tipo'];
+                    return $this->formulario($_POST['Id']);
+                }else{
+                    if($_POST['Estoque'] < $_POST['Quantidade']){
+                        $_GET['Tipo'] = $_POST['Tipo'];
+                        return $this->formulario($_POST['Id']);
+                    }else{
+                        // debug($_POST);
+                        $aux = explode('-', trim($_POST['Id_material']));
+                        $_POST['Id_material'] = $aux[0];
+                        $aux = explode('-', trim($_POST['Id_Ca']));
+                        $_POST['Id_Ca'] = $aux[0];
+                    }
+                }
                 break;
             case 2:
-                # code...
+                if (!$this->validate([
+                    'Id' => 'trim',
+                    'Tipo' => 'trim',
+                    'Quantidade' => ['rules' => 'required', 'errors' => ['required' => 'Campo Quantidade é obrigatório.']],
+                    'Id_material' => ['rules' => 'required', 'errors' => ['required' => 'Campo Material é obrigatório.']],
+                    'Id_Ca' => ['rules' => 'required', 'errors' => ['required' => 'Campo CA é obrigatório.']],
+                    'Id_recebe' => ['rules' => 'required', 'errors' => ['required' => 'Campo CA NOVO é obrigatório.']],
+                    ])) {
+                    // debug('teste');
+                    $_GET['Tipo'] = $_POST['Tipo'];
+                    return $this->formulario($_POST['Id']);
+                }else{
+                    if($_POST['Estoque'] < $_POST['Quantidade']){
+                        $_GET['Tipo'] = $_POST['Tipo'];
+                        return $this->formulario($_POST['Id']);
+                    }else{
+                        // debug($_POST);
+                        $aux = explode('-', trim($_POST['Id_material']));
+                        $_POST['Id_material'] = $aux[0];
+                        $aux = explode('-', trim($_POST['Id_Ca']));
+                        $_POST['Id_Ca'] = $aux[0];
+                        $aux = explode('-', trim($_POST['Id_recebe']));
+                        $_POST['Id_recebe'] = $aux[0];
+                    }
+                }
                 break;
         }
         $id = $_POST['Id'];
@@ -88,7 +134,7 @@ class Movimentacoes extends CoreController
 
     public function formulario ($id = null)
     {
-        // debug("formulario");
+        // debug($id);
         if ($id == null) {
             $id = isset($_POST['Id']) ? $_POST['Id'] : null; 
         }

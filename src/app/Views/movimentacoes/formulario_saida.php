@@ -18,7 +18,7 @@
                                             <?= hidden('Tipo', $Tipo);?>
                                             <?= buscar('Centro de Armazenagem','Id_Ca',4,isset($registro) ? rtrim($registro['Id_Ca']) : ''); ?>
                                             <?= buscar('Material','Id_material',4,isset($registro) ? rtrim($registro['Id_material']) : ''); ?>
-                                            <?= input('Estoque','Estoque',2,0,'text', null, 'readonly'); ?>
+                                            <?= input('Estoque','Estoque',2,isset($registro) ? rtrim($registro['Estoque']) : 0,'text', null, 'readonly'); ?>
                                             <?= input('Quantidade','Quantidade',2,isset($registro) ? rtrim($registro['Quantidade']) : '','text'); ?>
                                         </div>
                                         <div class="right" style="margin-top: 5px;">
@@ -57,10 +57,18 @@
         });
 
         $(document).ready(function() {
-            
+            var index = {};
 
             $('#materiais').on("dblclick", "tr:has(td)", function(e) {
                 $('#Id_material').val($(this).attr("data-id"));
+                var id = $(this).attr("data-id");
+                id = id.trim();
+                var aux = id.split('-');
+                id = aux[0].trim();
+                console.log(id);
+                console.log(index);
+                // console.log($('#materiais').DataTable().rows().data().toArray()[2].Quantidade);
+                $('#Estoque').val(index[id]);
                 $('#materiais_modal').modal('hide');
             });
 
@@ -85,7 +93,7 @@
                 $('#cas_modal').modal('hide');
                 $('#materiais').DataTable({
                 ajax: {
-                    url: "/Materiais/listagem_materiais",
+                    url: "/Materiais/listagem_saida",
                     data: {ca : $('#Id_Ca').val()},
                     type: "post"
                 },
@@ -99,6 +107,8 @@
                 ],
                 createdRow: function (row, data, dataIndex) {
                     $(row).attr('data-id', data.Id + ' - ' + data.Descricao);
+                    index[data.Id] = data.Estoque;
+
                 }
             });
             });

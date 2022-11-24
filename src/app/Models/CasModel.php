@@ -9,9 +9,13 @@ class CasModel extends CoreModel
         'Id' => 'required|is_unique[CAs.Id]'
     ];
 
-    public function listagem_cas($start = null, $length = null, $campo = null, $direcao = null, $search = null)
+    public function listagem_cas($start = null, $length = null, $campo = null, $direcao = null, $search = null, $ca = null)
     {
         $where = "WHERE 1=1";
+
+        if($ca != null){
+            $where .= " AND Id <> $ca";
+        }
 
         if ($search != "") {
             $where .= " AND
