@@ -2,12 +2,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-6">
-                <script>document.write(new Date().getFullYear())</script> &copy; CIGAM.
-            </div>
-            <div class="col-sm-6">
-                <div class="text-sm-end d-none d-sm-block">
-                    Desenvolvido pela CIGAM - You Select.
-                </div>
+                <script>document.write(new Date().getFullYear())</script> &copy; Fernando Augusto.
             </div>
         </div>
     </div>

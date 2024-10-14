@@ -43,4 +43,45 @@ class CoreModel extends Model
         $count = count($builder->get()->getResultArray());
         return $count > 0 ? true : false;
     }
+
+    public function listagemInicio($start = null, $length = null, $campo = null, $direcao = null, $search = null, $dt_inicio = null, $dt_limite = null)
+    {
+        $where = "WHERE Data >= '".$dt_inicio."  00:00:00' AND Data <= '".$dt_limite." 23:59:59'";
+        
+        if ($search != "") {
+            $where = " AND
+                Data LIKE '%".$search."%' OR
+                Entrada LIKE '%".$search."%' OR
+                M.Quantidade LIKE '%".$search."%' OR
+                I.Descricao LIKE '%".$search."%' OR
+                M.Id LIKE '%".$search."%'
+            ";
+        }
+
+        $query =$this->db->query("SELECT M.Quantidade,
+            CASE
+            WHEN M.Entrada = 0 THEN 'Entrada'
+            WHEN M.Entrada = 1 THEN 'Saída'
+            WHEN M.Entrada = 2 THEN 'Transferência'
+            ELSE '' END Entrada,
+            FORMAT(M.data, 'dd/MM/yyyy') as Data,
+            I.Descricao, 
+            M.Id
+        FROM Movimentacoes M
+        LEFT OUTER JOIN Estoque E ON E.Id = M.Id_estoque
+        LEFT OUTER JOIN Materiais I ON I.Id = E.Id_material 
+        $where
+        ORDER BY $campo $direcao
+        OFFSET $start ROWS
+        FETCH NEXT $length ROWS ONLY");
+
+        $response['data'] = $query->getResultArray();
+        $response['lastQuery'] = $this->db->getLastQuery()->getQuery();
+        $countall = count($response['data']);
+        $response['recordsFiltered'] = $countall;
+        $response['recordsTotal'] = $countall;
+        $response['where'] = $where;
+        return $response;
+    }
+
 }

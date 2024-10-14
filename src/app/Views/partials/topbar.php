@@ -22,10 +22,10 @@
                     <div class="dropdown-menu dropdown-menu-end">
                         <!-- item-->
                         
-                        <a class="dropdown-item" href="Usuarios/alterar_senha"><i class="bx bx-lock-open font-size-16 align-middle me-1"></i>
+                        <a class="dropdown-item" href=<?php echo site_url("Usuarios/alterar_senha");?>><i class="bx bx-lock-open font-size-16 align-middle me-1"></i>
                         Alterar senha</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item text-danger" href="Usuarios/logout"><i
+                        <a class="dropdown-item text-danger" href=<?php echo site_url("Usuarios/logout");?>><i
                                 class="bx bx-power-off font-size-16 align-middle me-1 text-danger"></i> Sair</a>
                     </div>
                 </div>

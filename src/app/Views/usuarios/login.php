@@ -14,7 +14,7 @@
                         <div class="bg-login text-center">
                             <div class="bg-login-overlay"></div>
                             <div class="position-relative">
-                                <h5 class="text-white font-size-20">Portal CIGAM</h5>
+                                <h5 class="text-white font-size-20">AGROSYS</h5>
                                 <p class="text-white-50 mb-0">Identifique-se para continuar.</p>
                                 <a href="/" class="logo logo-admin mt-4">
                                     <img src="/assets/images/logo-sm-dark.png" alt="logo-sm-dark" height="30">

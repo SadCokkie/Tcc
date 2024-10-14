@@ -2,161 +2,68 @@
 namespace App\Models;
 class RelatoriosModel extends CoreModel
 {
-    protected $table = 'GEENTREG';
-    protected $primaryKey = 'Cd_empresa, Ordem, Cd_entrega, Sugestao';
-    protected $allowedFields = ['Bairro','Campo16','Campo17','Campo18','Campo19','Campo20','Campo21','Campo22','Campo23','Campo24','Campo25','Campo26','Campo27','Campo28','Campo29','Campo30','Campo31','Campo32','Campo33','Campo34','Campo35','Campo36','Campo37','Campo38','Campo39','Campo40','Campo41','Campo42','Campo43','Cd_empresa','Cd_entrega','Cd_pais','Cep','Dt_modificacao','Endereco','Municipio','Observacao','Ordem','Sessao','Sugestao','Uf','Usuario_criacao','Usuario_modific'];
-    protected $validationRules = [
-        'PK' => 'required|is_unique[GEENTREG.Cd_empresa, GEENTREG.Ordem, GEENTREG.Cd_entrega, GEENTREG.Sugestao]'
-    ];
-
-    public function buscar_notas($start = null, $length = null, $campo = null, $direcao = null, $search = null, $empresa = null)
-    {
-        $where = "WHERE N.Cd_empresa = '".$empresa."'";
-
-        if ($search != "") {
-            $where = " AND
-                D.Nome LIKE '%".$search."%' OR
-                A.Nome  LIKE '%".$search."%' OR
-                N.Nota LIKE '%".$search."%'
-            ";
-        }
-        
-        $query =$this->db->query("SELECT 
-            D.Nome Disciplina, 
-            A.Nome Avaliacao, 
-            N.Nota 
-        FROM TENOTAS N
-        LEFT OUTER JOIN TEAVALIACOES A ON N.Cd_avaliacao = A.Cd_avaliacao
-        LEFT OUTER JOIN TEDISCIPLINAS D ON D.Cd_disciplina = A.Cd_disciplina
-        $where
-        ORDER BY D.Nome asc, A.Data asc
-        OFFSET $start ROWS
-        FETCH NEXT $length ROWS ONLY");
-
-        $response['data'] = $query->getResultArray();
-        $response['lastQuery'] = $this->db->getLastQuery()->getQuery();
-        $countall = $this->db->query("SELECT COUNT(*) Resultados FROM TEDISCIPLINAS D $where");
-        $countall = $countall->getRowArray();
-        $response['recordsFiltered'] = $countall['Resultados'];
-        $response['recordsTotal'] = $countall['Resultados'];
-        $response['where'] = $where;
-        
-        return $response;
-    }
-
-    public function buscar_presencas($start = null, $length = null, $campo = null, $direcao = null, $search = null, $empresa = null)
-    {
-        $where = "WHERE P.Cd_empresa = '".$empresa."'";
-
-        if ($search != "") {
-            $where = " AND
-                D.Nome LIKE '%".$search."%' OR
-                A.Data  LIKE '%".$search."%' OR
-                N.Presente LIKE '%".$search."%'
-            ";
-        }
-        
-        $query =$this->db->query("SELECT 
-            D.Nome Disciplina
-            ,A.Data
-            ,P.Presente
-        FROM TEPRESENCAS P
-        LEFT OUTER JOIN TEAULAS A ON P.Cd_aula = A.Cd_aula
-        LEFT OUTER JOIN TEDISCIPLINAS D ON D.Cd_disciplina = A.Cd_disciplina
-        $where
-        ORDER BY D.Nome asc, A.Data asc
-        OFFSET $start ROWS
-        FETCH NEXT $length ROWS ONLY");
-
-        $response['data'] = $query->getResultArray();
-        $response['lastQuery'] = $this->db->getLastQuery()->getQuery();
-        $countall = $this->db->table('TEPRESENCAS P')->join('TEAULAS A','P.Cd_aula = A.Cd_aula','left')->join('TEDISCIPLINAS D','D.Cd_disciplina = A.Cd_disciplina','left')->where('P.Cd_empresa',$empresa)->countAllResults();
-        $response['recordsFiltered'] = $countall;
-        $response['recordsTotal'] = $countall;
-        $response['where'] = $where;
-        
-        return $response;
-    }
-
-    public function buscar_atestados($start = null, $length = null, $campo = null, $direcao = null, $search = null, $empresa = null)
-    {
-        $where = "WHERE A.Cd_empresa = '".$empresa."'";
-
-        if ($search != "") {
-            $where = " AND
-                E.Nome_completo LIKE '%".$search."%' OR
-                A.Data  LIKE '%".$search."%' OR
-                A.Duracao LIKE '%".$search."%'
-            ";
-        }
-        
-        $query =$this->db->query("SELECT 
-            RTRIM(E.Nome_completo) Nome_completo
-            ,A.Data
-            ,A.Duracao
-        FROM TEATESTADOS A
-        LEFT OUTER JOIN GEEMPRES E ON E.Cd_empresa = A.Cd_empresa
-        $where
-        ORDER BY E.Nome_completo asc, A.Data asc
-        OFFSET $start ROWS
-        FETCH NEXT $length ROWS ONLY");
-
-        $response['data'] = $query->getResultArray();
-        $response['lastQuery'] = $this->db->getLastQuery()->getQuery();
-        $countall = $this->db->table('TEATESTADOS A')->join('GEEMPRES E','E.Cd_empresa = A.Cd_empresa','left')->where('A.Cd_empresa',$empresa)->countAllResults();
-        $response['recordsFiltered'] = $countall;
-        $response['recordsTotal'] = $countall;
-        $response['where'] = $where;
-        
-        return $response;
-    }
-
-    public function buscar_financeiro($start = null, $length = null, $campo = null, $direcao = null, $search = null, $empresa = null)
+    public function busca_estoque($ca = null, $material = null, $grupo = null, $entrada = null, $data_inicio = null, $data_fim = null)
     {
         $where = "WHERE 1=1";
-        
-        if($empresa != null) {
-            $where .= " AND C.Cd_empresa = ".$empresa;
-        }
-        
-        
-        if ($search != "") {
-            $where = " AND
-                P.Cd_contrato LIKE '%".$search."%' OR
-                P.Cd_parcela LIKE '%".$search."%' OR
-                P.Valor LIKE '%".$search."%' OR
-                P.Tipo LIKE '%".$search."%' OR
-                P.Data_pagamento LIKE '%".$search."%' OR
-                K.Nome LIKE '%".$search."%' OR
-                P.Validade LIKE '%".$search."%'
-            ";
-        }
 
-        $query =$this->db->query("SELECT 
-            P.Cd_contrato
-            ,P.Cd_parcela
-            ,P.Valor
-            ,P.Tipo
-            ,K.Nome
-            ,FORMAT(P.Data_pagamento, 'dd/MM/yyyy') Data_pagamento
-            ,FORMAT(P.Validade, 'dd/MM/yyyy') Validade
-        FROM TEPARCELAS P
-        LEFT OUTER JOIN TECONTRATOS C ON C.Cd_contrato = P.Cd_contrato
-        LEFT OUTER JOIN TECURSOS K ON K.Cd_curso = C.Cd_curso
-        $where
-        ORDER BY $campo $direcao
-        OFFSET $start ROWS
-        FETCH NEXT $length ROWS ONLY");
-
-        $response['data'] = $query->getResultArray();
-        $response['lastQuery'] = $this->db->getLastQuery()->getQuery();
+        if(!empty($ca)) $where .= " AND C.Id = $ca";
+        if(!empty($material)) $where .= " AND I.Id = $material";
+        if(!empty($grupo)) $where .= " AND G.Id = $grupo";
+        if(!empty($entrada)) $where .= " AND M.Entrada = $entrada";
+        if(!empty($data_inicio)) $where .= " AND M.data > '$data_inicio'";
+        if(!empty($data_fim)) $where .= " AND M.data < '$data_fim'";
         // debug($where);
-        $countall = $this->db->query("SELECT COUNT(*) Resultados FROM TECONTRATOS C $where");
-        $countall = $countall->getRowArray();
-        // debug($countall['Resultados']);
-        $response['recordsFiltered'] = $countall['Resultados'];
-        $response['recordsTotal'] = $countall['Resultados'];
+
+        $select = "
+        SELECT DISTINCT  I.Id Material, I.Descricao";
         
+        $query =$this->db->query("$select 
+        FROM Materiais I 
+        LEFT OUTER JOIN Estoque E ON E.Id_material = I.Id
+        LEFT OUTER JOIN Movimentacoes M ON E.Id = M.Id_estoque
+        LEFT OUTER JOIN CAs C ON C.Id = E.Id_ca
+        LEFT OUTER JOIN GruposMateriais G ON G.Id = I.IdGrupo 
+        $where");
+        $response['material'] = $query->getResultArray();
+        // debug($this->db->getLastQuery());
+
+        $materiais = "";
+        if(empty($material)){
+            foreach ($response['material'] as $key => $value) {
+                // debug($value);
+                $materiais .= $value['Material'].",";
+            }
+            $materiais = substr($materiais, 0, -1);
+            $where .= " AND I.Id in ($materiais)";
+        }
+        // debug($where);
+        
+
+        $select = "
+        SELECT 
+        (SELECT SUM(M2.Quantidade) FROM Movimentacoes M2 LEFT OUTER JOIN Estoque E2 ON E2.Id = M2.Id_estoque WHERE E2.Id_material = I.Id AND M2.Entrada = 0 ) Total_entrada,
+		(SELECT SUM(M2.Quantidade) FROM Movimentacoes M2 LEFT OUTER JOIN Estoque E2 ON E2.Id = M2.Id_estoque WHERE E2.Id_material = I.Id AND M2.Entrada = 1 ) Total_saida,
+		(SELECT SUM(M2.Quantidade) FROM Movimentacoes M2 LEFT OUTER JOIN Estoque E2 ON E2.Id = M2.Id_estoque WHERE E2.Id_material = I.Id AND M2.Entrada = 2 ) Total_transferencia,
+        CASE 
+        WHEN M.Entrada = 0 THEN 'Entrada'
+        WHEN M.Entrada = 1 THEN 'Baixa'
+        WHEN M.Entrada = 2 THEN 'Transferência'
+        END Entrada, M.data, M.Quantidade Movimentacao,
+        M.Id_estoque, E.Quantidade Estoque,
+        E.Id_material, I.Descricao Material,
+        G.Nome, C.Descricao Ca";
+        
+        $query =$this->db->query("$select 
+        FROM Movimentacoes M 
+        LEFT OUTER JOIN Estoque E ON E.Id = M.Id_estoque
+        LEFT OUTER JOIN Materiais I ON I.Id = E.Id_material
+        LEFT OUTER JOIN CAs C ON C.Id = E.Id_ca
+        LEFT OUTER JOIN GruposMateriais G ON G.Id = I.IdGrupo 
+        $where 
+        ORDER BY M.data ASC");
+        $response['data'] = $query->getResultArray();
+        // debug($this->db->getLastQuery());
+        // debug($query->getResultArray());
         return $response;
     }
 }

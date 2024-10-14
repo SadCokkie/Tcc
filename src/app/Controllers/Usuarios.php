@@ -78,12 +78,14 @@ class Usuarios extends CoreController
 
     public function login()
     {
+        // phpinfo();
         $data['titulo'] = 'Portal AgroSyS | Login';
         return view('usuarios/login', $data);
     }
 
     public function logar()
     {
+        // phpinfo();
         $session = session();
         // debug($_POST);
         $usuario = null;

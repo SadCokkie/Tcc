@@ -12,18 +12,18 @@
                                     <!-- ============================================================== -->
                                     <!-- Start Content here -->
                                     <!-- ============================================================== -->
-                                    <form id="formulario_movimentacoes" style="position: static;" width="100%" action="/Movimentacoes/salvar" method="post">
+                                    <form id="formulario_relatorio" style="position: static;" width="100%" action="/Relatorios/buscar_estoque" method="post">
                                         <div class="row">
-                                            <?= hidden('Id', isset($registro) ? $registro['Id'] : '');?>
-                                            <?= hidden('Tipo', $Tipo);?>
-                                            <?= buscar('Material','Id_material',4,isset($registro) ? rtrim($registro['Id_material']) : ''); ?>
-                                            <?= buscar('Centro de Armazenagem','Id_Ca',4,isset($registro) ? rtrim($registro['Id_Ca']) : ''); ?>
-                                            <?= input('Quantidade','Quantidade',2,isset($registro) ? rtrim($registro['Quantidade']) : '','text'); ?>
+                                            <?= buscar('Centro de Armazenagem','Id_Ca',4,''); ?>
+                                            <?= buscar('Material','Id_material',4,''); ?>
+                                            <?= input('Grupo','IdGrupo',3,'','datalist', $grupos); ?>
+                                            <?= input('Tipo de Movimentação','movimento',3,'','datalist', $movimentos); ?>
+                                            <?= input('Data Inicial','Data_inicio',2,'','date'); ?>
+                                            <?= input('Data Final','Data_fim',2,'','date'); ?>
                                         </div>
                                         <div class="right" style="margin-top: 5px;">
-                                            <a href="/Movimentacoes?Entrada=<?= $Tipo?>" class="btn btn-secondary"><i class="fas fa-reply"></i></a>
+                                            <a href="/" class="btn btn-secondary"><i class="fas fa-reply"></i></a>
                                             <button class="btn btn-primary" type="submit"><i class="fas fa-check"></i></button>
-                                            <?= $edit == true ? '<a href="/Movimentacoes/excluir/'.$registro['Id'].'?Entrada='.$Tipo.'" class="btn btn-dark"><i class="fas fa-trash"></i></a>' : '' ?>
                                         </div>
                                     </form>
                                     <!-- ============================================================== -->
@@ -52,6 +52,13 @@
         });
 
         $(document).ready(function() {
+            var index = {};
+
+            $('#materiais').on("dblclick", "tr:has(td)", function(e) {
+                $('#Id_material').val($(this).attr("data-id"));
+                $('#materiais_modal').modal('hide');
+            });
+
             $('#materiais').DataTable({
                 ajax: {
                     url: "/Materiais/listagem_materiais",
@@ -68,11 +75,6 @@
                 createdRow: function (row, data, dataIndex) {
                     $(row).attr('data-id', data.Id + ' - ' + data.Descricao);
                 }
-            });
-
-            $('#materiais').on("dblclick", "tr:has(td)", function(e) {
-                $('#Id_material').val($(this).attr("data-id"));
-                $('#materiais_modal').modal('hide');
             });
 
             $('#cas').DataTable({

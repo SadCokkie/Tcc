@@ -22,7 +22,17 @@ class Movimentacoes extends CoreController
     {
         $data['Tipo'] = $_GET['Entrada'];
         // debug($data['Tipo']);
-        $data['titulo'] = 'Movimentações';
+        switch ($data['Tipo']) {
+            case 0:
+                $data['titulo'] = 'Movimentações - Entradas';
+                break;
+            case 1:
+                $data['titulo'] = 'Movimentações - Baixas';
+                break;
+            case 2:
+                $data['titulo'] = 'Movimentações - Transferências';
+                break;
+        }
         $data['sidebar'] = $this->sidebar;
         return view('movimentacoes/listagem',$data);
     }
@@ -115,6 +125,7 @@ class Movimentacoes extends CoreController
         }
         $id = $_POST['Id'];
         unset($_POST['Id']);
+        // unset($_POST['Tipo']);
         // debug($_POST);
         if($id == '') {
             $this->movimentacaoModel->inserir($_POST);
@@ -129,7 +140,10 @@ class Movimentacoes extends CoreController
     {
         $this->movimentacaoModel->excluir($id);
         notificacao($id == '' ? 'Usuário não encontrado!' : 'Excluido com sucesso!');
-        return $this->index();
+        // return $this->index();
+        // debug($_GET);
+        // $data['Tipo'] = $_GET['Tipo'];
+        return redirect()->to('/movimentacoes/?Entrada='.$_GET['Entrada']);//$this->index();
     }
 
     public function formulario ($id = null)
@@ -144,7 +158,8 @@ class Movimentacoes extends CoreController
         $data['Tipo'] = $_GET['Tipo'];
         
         if ($id != null && ! is_array($id)) {
-            $data['registro'] = $this->find($id,$this->movimentacaoModel);
+            $data['registro'] = $this->movimentacaoModel->registro($id);
+            // debug($data['registro']);
             $data['edit'] = true;
         }
         

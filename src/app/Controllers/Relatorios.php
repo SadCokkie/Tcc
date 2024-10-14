@@ -6,107 +6,40 @@ use PhpParser\Node\Stmt\Break_;
 
 class Relatorios extends CoreController
 {
-    private $contratosModel;
-    private $cursosModel;
-    private $notasModel;
-    private $presencasModel;
-    private $empresasModel;
     private $relatoriosModel;
     use ResponseTrait;
 
     public function __construct()
     {
         parent::__construct();
-        $this->contratosModel = new \App\Models\TecontratosModel();
-        $this->parcelasModel = new \App\Models\TeparcelasModel();
-        $this->notasModel = new \App\Models\TenotasModel();
-        $this->presencasModel = new \App\Models\TepresencasModel();
-        $this->empresasModel = new \App\Models\GeempresModel();
         $this->relatoriosModel = new \App\Models\RelatoriosModel();
+        $this->materialModel   = new \App\Models\MateriaisModel();
     }
 
-    public function notas()
+    public function estoque()
     {
-        $data['titulo'] = 'Notas';
-        $data['sidebar'] = $this->sidebar;
-        return view('iecg/relatorios/notas',$data);
+        $data['titulo'] = 'Estoque';
+        $data['grupos'] = $this->materialModel->listaGrupos();
+        $data['movimentos'][1] = ['id' => 0, 'descricao' => 'Entrada'];
+        $data['movimentos'][2] = ['id' => 1, 'descricao' => 'Baixa'];
+        $data['movimentos'][3] = ['id' => 2, 'descricao' => 'Transferência'];
+        return view('relatorios/estoque_filtro',$data);
     }
 
-    public function buscar_notas()
+    public function buscar_estoque()
     {
-        $data    = $this->request->getPost();
-        $start	 = $data["start"]; // valor inicial limit
-        $length	 = $data["length"]; 
-        $search  = $data["search"]["value"];
-        $order	 = $data["order"]; // pega qual campo vai ser ordenado
-        $campo   = $data["columns"][$order[0]["column"]]["data"]; // pega o nome do campo que sera ordenado
-        $direcao = $order[0]["dir"]; // pega o nome do campo que sera ordenado
-        $listagem = $this->relatoriosModel->buscar_notas($start, $length, $campo, $direcao, $search, substr($data['empresa'],0,6));
-        echo json_encode($listagem);
-    }
-
-    public function presencas()
-    {
-        $data['titulo'] = 'Presenças';
-        $data['sidebar'] = $this->sidebar;
-        return view('iecg/relatorios/presencas',$data);
-    }
-
-    public function buscar_presencas()
-    {
-        $data    = $this->request->getPost();
-        $start	 = $data["start"]; // valor inicial limit
-        $length	 = $data["length"]; 
-        $search  = $data["search"]["value"];
-        $order	 = $data["order"]; // pega qual campo vai ser ordenado
-        $campo   = $data["columns"][$order[0]["column"]]["data"]; // pega o nome do campo que sera ordenado
-        $direcao = $order[0]["dir"]; // pega o nome do campo que sera ordenado
-        $listagem = $this->relatoriosModel->buscar_presencas($start, $length, $campo, $direcao, $search, substr($data['empresa'],0,6));
-        echo json_encode($listagem);
-    }
-
-    public function atestados()
-    {
-        $data['titulo'] = 'Atestados';
-        $data['sidebar'] = $this->sidebar;
-        return view('iecg/relatorios/atestados',$data);
-    }
-
-    public function buscar_atestados()
-    {
-        $data    = $this->request->getPost();
-        $start	 = $data["start"]; // valor inicial limit
-        $length	 = $data["length"]; 
-        $search  = $data["search"]["value"];
-        $order	 = $data["order"]; // pega qual campo vai ser ordenado
-        $campo   = $data["columns"][$order[0]["column"]]["data"]; // pega o nome do campo que sera ordenado
-        $direcao = $order[0]["dir"]; // pega o nome do campo que sera ordenado
-        $listagem = $this->relatoriosModel->buscar_atestados($start, $length, $campo, $direcao, $search, substr($data['empresa'],0,6));
-        echo json_encode($listagem);
-    }
-
-    public function financeiro()
-    {
-        $data['titulo']  = 'Financeiro';
-        $data['sidebar'] = $this->sidebar;
-        $data['empresa'] = null;
-        if (isset($_GET['empresa'])) {
-            $empresa = $this->empresasModel->find($_GET['empresa']);
-            $data['empresa'] = $empresa['Cd_empresa']." - ".$empresa['Nome_completo'];
+        $data['titulo'] = 'Estoque';
+        if(!empty($_POST['Id_material'])){
+            $aux = explode('-', trim($_POST['Id_material']));
+            $_POST['Id_material'] = $aux[0];
         }
-        return view('iecg/relatorios/financeiro',$data);
-    }
-
-    public function buscar_financeiro()
-    {
-        $data    = $this->request->getPost();
-        $start	 = $data["start"]; // valor inicial limit
-        $length	 = $data["length"]; 
-        $search  = $data["search"]["value"];
-        $order	 = $data["order"]; // pega qual campo vai ser ordenado
-        $campo   = $data["columns"][$order[0]["column"]]["data"]; // pega o nome do campo que sera ordenado
-        $direcao = $order[0]["dir"]; // pega o nome do campo que sera ordenado
-        $listagem = $this->relatoriosModel->buscar_financeiro($start, $length, $campo, $direcao, $search, substr($data['empresa'],0,6));
-        echo json_encode($listagem);
+        if(!empty($_POST['Id_Ca'])){
+            $aux = explode('-', trim($_POST['Id_Ca']));
+            $_POST['Id_Ca'] = $aux[0];
+        }
+        $data['estoque'] = $this->relatoriosModel->busca_estoque($_POST['Id_Ca'], $_POST['Id_material'], $_POST['IdGrupo'], $_POST['movimento'], $_POST['Data_inicio'], $_POST['Data_fim']);
+        // debug($data['estoque']);
+        
+        return view('relatorios/estoque',$data);
     }
 }

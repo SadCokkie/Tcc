@@ -31,8 +31,10 @@
                                         <thead>
                                             <tr>
                                                 <th>DATA</th>
-                                                <th>DISCIPLINA</th>
-                                                <th>TIPO</th>
+                                                <th>MATERIAL</th>
+                                                <th>QUANTIDADE</th>
+                                                <th>MOVIMENTAÇÃO</th>
+                                                <th>ID MOV.</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -184,12 +186,17 @@
                     }
                 },
                 columns:[
-                    { data: "Data" },
-                    { data: "Disciplina" },
-                    { data: "Tipo" }
+                    { data: "Data"},
+                    { data: "Descricao"},
+                    { data: "Quantidade"},
+                    { data: "Entrada"},
+                    { data: "Id"}
+                ],
+                columnDefs: [
+                    {className: "dt-center", targets: "_all"}
                 ],
                 createdRow: function (row, data, dataIndex) {
-                    $(row).attr('data-id', data.Cd_disciplina);
+                    $(row).attr('data-id', data.Id);
                 }
             });
         });
